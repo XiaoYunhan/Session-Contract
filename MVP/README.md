@@ -2,7 +2,55 @@
 
 A lightweight, **fully local** demo system to validate the core mechanics of **Session Contracts**: a ring-fenced collateral pool on a fixed basket of legs, where participants trade **reallocations of claims** (relative value) and settle against a **predefined price source** at maturity.
 
-This is **not** an exchange, not custody, not production trading infrastructure. It’s a verification and demo harness: conservation, no-unfunded positions, deterministic settlement, auditable state transitions.
+This is **not** an exchange, not custody, not production trading infrastructure. It's a verification and demo harness: conservation, no-unfunded positions, deterministic settlement, auditable state transitions.
+
+---
+
+## ⚡ Quick Start (ONE COMMAND!)
+
+```bash
+cd MVP
+./start-demo.sh
+```
+
+This will:
+1. Start the backend API server (port 8000)
+2. Create a demo session with AAPL, NVDA, META, ORCL
+3. Start the price oracle streaming live prices
+4. Launch the frontend UI (port 5173)
+5. Open your browser automatically
+
+**Access:**
+- **Frontend**: http://localhost:5173
+- **API Docs**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+**Stop everything:**
+```bash
+./stop-demo.sh
+```
+
+**Alternative - Docker:**
+```bash
+# Start backend + frontend
+docker compose up -d --build
+
+# Create session
+curl -X POST http://localhost:8000/api/v1/sessions \
+  -H "Content-Type: application/json" \
+  -d '{"session_id":"demo","legs":["AAPL","NVDA","META","ORCL"],"q":[100,60,80,120],"start_mode":"immediate","end_mode":"manual"}'
+
+# Start oracle
+docker compose --profile oracle up -d
+```
+
+**Run Tests:**
+```bash
+cd backend
+source .venv/bin/activate
+pytest app/tests/ -v
+# Result: 18 passed in 0.27s ✅
+```
 
 ---
 
